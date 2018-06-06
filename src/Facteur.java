@@ -52,7 +52,6 @@ public class Facteur  extends Thread
 
                     this.out.write(outputData,0,outputData.length);
                     this.out.flush();
-
                 }
 
             }
@@ -64,7 +63,7 @@ public class Facteur  extends Thread
             try
             {
                 System.out.println(" => Essai lecture");
-                byte[] inputData = new byte[Data.TAILLE_MESSAGE_ECHANGE];
+                byte[] inputData = new byte[Data.TAILLE_DATA_ECHANGE];
 
                 this.in.read(inputData);
 

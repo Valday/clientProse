@@ -1,88 +1,88 @@
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Data
 {
     /** Taille maximum de la partie textuelle du message */
-    public static final int TAILLE_MAX_MESSAGE = 32;
+    public static final int TAILLE_TYPE = 1;
+    public static final int TAILLE_X = 1;
+    public static final int TAILLE_Y = 1;
+    public static final int TAILLE_DISTANCE = 1;
 
-    /** Taille total du message (texte + entier) */
-    public static final int TAILLE_MESSAGE_ECHANGE = (TAILLE_MAX_MESSAGE + 4);
+    /** Taille total du message (type (byte) + x (byte) + y (byte) + distance (short)) */
+    public static final int TAILLE_DATA_ECHANGE = (TAILLE_TYPE + TAILLE_X + TAILLE_Y + TAILLE_DISTANCE);
 
-    
+    private byte _type;
 
-    private String _message;
+    private byte _x;
 
-    private int _x;
+    private byte _y;
 
-    private int _y;
+    private short _distance;
 
-
-    public String get_message() {
-        return _message;
+    public byte get_type()
+    {
+        return _type;
     }
 
-    public void set_message(String _message) {
-        this._message = _message;
+    public void set_type(byte _type)
+    {
+        this._type = _type;
     }
 
-    public int get_x() {
+    public byte get_x()
+    {
         return _x;
     }
 
-    public void set_x(int _x) {
+    public void set_x(byte _x)
+    {
         this._x = _x;
     }
 
-    public int get_y() {
+    public byte get_y()
+    {
         return _y;
     }
 
-    public void set_y(int _y) {
+    public void set_y(byte _y)
+    {
         this._y = _y;
     }
 
-    public Data(String _message, int _x, int _y)
+    public short get_distance()
     {
-        this._message = _message;
-        this._x = _x;
-        this._y = _y;
+        return _distance;
+    }
+
+    public void set_distance(short _distance)
+    {
+        this._distance = _distance;
     }
 
     private Data()
     {
     }
 
+    public Data(byte _type, byte _x, byte _y, short _distance)
+    {
+        this._type = _type;
+        this._x = _x;
+        this._y = _y;
+        this._distance = _distance;
+    }
+
     public Data(byte [] donneeEchange)
     {
 
-        int tailleMessageCapitaine = 0;
+        this._type = ByteBuffer.wrap(donneeEchange).get(0);
 
-        while (tailleMessageCapitaine < TAILLE_MAX_MESSAGE - 1
-                && donneeEchange[tailleMessageCapitaine] != 0) {
-            tailleMessageCapitaine++;
-        }
+        this._x = ByteBuffer.wrap(donneeEchange).get(TAILLE_TYPE);
 
-        this._message = new String(donneeEchange).substring(0, tailleMessageCapitaine);
+        this._y = ByteBuffer.wrap(donneeEchange).get(TAILLE_TYPE + TAILLE_X);
 
-        /* 1ère approche avec gestion des bits */
-		/*
-		this.ageCapitaine = 0;
-	        for (int i = 0 ; i < 4 ; i++)
-        		this.ageCapitaine |=
-				donneeEchange[ i + TAILLE_MAX_MESSAGE_CAPITAINE ] << ((3 - i) * 8)
-				& 0xFF << ((3 - i) * 8);
-		*/
-        /* Remarque : l'instruction " & 0xFF << ((3 - i) * 8) " évite la promotion du bit de signe. */
+        this._y = ByteBuffer.wrap(donneeEchange).get(TAILLE_TYPE + TAILLE_X + TAILLE_Y);
 
-        /* 2ème approche avec utilisation d'un ByteBuffer. */
-
-        /* 2.0 */
-		/*
-		this.ageCapitaine = ByteBuffer.allocate(4).put(donneeEchange, TAILLE_MAX_MESSAGE_CAPITAINE, 4).getInt(0);
-		*/
-
-        /* 2.1 */
-        this._x = ByteBuffer.wrap(donneeEchange).getInt(TAILLE_MAX_MESSAGE);
     }
 
     /**
@@ -93,56 +93,17 @@ public class Data
      */
     public byte [] formatMessageEnvoi()
     {
-        byte [] formatMessage = new byte [TAILLE_MESSAGE_ECHANGE];
-
-        int tailleMessageCapitaine =
-                ( this._message.length() < TAILLE_MAX_MESSAGE )?
-                        this._message.length() : TAILLE_MAX_MESSAGE;
-
-        /* 1ère approche avec la gestion des bits */
-		/*
-		for (int i = 0 ; i < tailleMessageCapitaine - 1; i++)
-		{
-			formatMessage[i] = this.messageCapitaine.getBytes()[i];
-		}
-		formatMessage[tailleMessageCapitaine - 1] = 0;
-
-		for (int i = 0 ; i < 4 ; i++)
-		{
-			formatMessage[ i + TAILLE_MAX_MESSAGE_CAPITAINE ] =
-				(byte)(this.ageCapitaine >> ((3 - i) * 8));
-		}
-		*/
-
-        /* 2ème approche avec l'utilisation d'un ByteBuffer */
-
-        /* 2.0 */
-		/*
-		byte[] age = ByteBuffer.allocate(4).putInt(this.ageCapitaine).array();
-
-		for (int i = 0 ; i < 4 ; i++)
-		{
-			formatMessage[ i + TAILLE_MAX_MESSAGE_CAPITAINE ] = age[i];
-		}
-		*/
-
-        /* 2.1 */
-		/*
-		formatMessage = ByteBuffer.allocate(TAILLE_MESSAGE_ECHANGE)
-			.put(this.messageCapitaine.getBytes())
-			.put(tailleMessageCapitaine, (byte)0)
-			.putInt(TAILLE_MAX_MESSAGE_CAPITAINE, this.ageCapitaine)
-			.array();
-		*/
+        byte [] formatMessage = new byte [TAILLE_DATA_ECHANGE];
 
         /* 2.2 */
         ByteBuffer.wrap(formatMessage)
-                .put(this._message.getBytes())
-                .put(tailleMessageCapitaine, (byte)0)
-                .putInt(TAILLE_MAX_MESSAGE, this._x);
+                .put(this._type)
+                .put(this._x)
+                .put(this._y)
+                .putShort(this._distance);
 
         /* Si besoin d'afficher le message formaté en tableau de bytes. */
-        // System.out.println(Arrays.toString(formatMessage));
+         System.out.println(Arrays.toString(formatMessage));
 
         return formatMessage;
     }
@@ -152,9 +113,10 @@ public class Data
     public String toString()
     {
         return "Data{" +
-                "_message='" + _message + '\'' +
+                "_type=" + _type +
                 ", _x=" + _x +
                 ", _y=" + _y +
+                ", _distance=" + _distance +
                 '}';
     }
 }

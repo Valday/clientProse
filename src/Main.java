@@ -13,5 +13,14 @@ public class Main
 
         Facteur facteur = new Facteur(un_socket, "test");
 
+        Byte type = 0;
+        Byte x = 42;
+        Byte y = 42;
+        Short dist = null;
+
+        Data message = new Data(type,x,y,dist);
+
+        Facteur.set_messageTosend(message);
+
     }
 }
