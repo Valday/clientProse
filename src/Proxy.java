@@ -23,9 +23,9 @@ public class Proxy
         return _instance;
     }
 
-    public void sendMessage(Data msg)
+    public void sendMessage(Facteur facteur, DataOut msg)
     {
-        Facteur.set_messageTosend(msg);
+        facteur.set_messageTosend(msg);
     }
 
 }

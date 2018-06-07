@@ -1,13 +1,13 @@
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class Data
+public class DataOut
 {
     /** Taille maximum de la partie textuelle du message */
     public static final int TAILLE_TYPE = 1;
     public static final int TAILLE_X = 1;
     public static final int TAILLE_Y = 1;
-    public static final int TAILLE_DISTANCE = 1;
+    public static final int TAILLE_DISTANCE = 2;
 
     /** Taille total du message (type (byte) + x (byte) + y (byte) + distance (short)) */
     public static final int TAILLE_DATA_ECHANGE = (TAILLE_TYPE + TAILLE_X + TAILLE_Y + TAILLE_DISTANCE);
@@ -25,19 +25,9 @@ public class Data
         return _type;
     }
 
-    public void set_type(byte _type)
-    {
-        this._type = _type;
-    }
-
     public byte get_x()
     {
         return _x;
-    }
-
-    public void set_x(byte _x)
-    {
-        this._x = _x;
     }
 
     public byte get_y()
@@ -45,26 +35,16 @@ public class Data
         return _y;
     }
 
-    public void set_y(byte _y)
-    {
-        this._y = _y;
-    }
-
     public short get_distance()
     {
         return _distance;
     }
 
-    public void set_distance(short _distance)
-    {
-        this._distance = _distance;
-    }
-
-    private Data()
+    private DataOut()
     {
     }
 
-    public Data(byte _type, byte _x, byte _y, short _distance)
+    public DataOut(byte _type, byte _x, byte _y, short _distance)
     {
         this._type = _type;
         this._x = _x;
@@ -72,7 +52,7 @@ public class Data
         this._distance = _distance;
     }
 
-    public Data(byte [] donneeEchange)
+    public DataOut(byte [] donneeEchange)
     {
 
         this._type = ByteBuffer.wrap(donneeEchange).get(0);
@@ -112,7 +92,7 @@ public class Data
     @Override
     public String toString()
     {
-        return "Data{" +
+        return "DataOut{" +
                 "_type=" + _type +
                 ", _x=" + _x +
                 ", _y=" + _y +

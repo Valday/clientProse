@@ -13,14 +13,17 @@ public class Main
 
         Facteur facteur = new Facteur(un_socket, "test");
 
-        Byte type = 0;
+        Byte type = 2;
         Byte x = 42;
-        Byte y = 42;
-        Short dist = null;
+        Byte y = 45;
+        Short dist = 10;
 
-        Data message = new Data(type,x,y,dist);
+        DataOut initTrame = new DataOut((byte)0,(byte)42,(byte)0,(short)0);
 
-        Facteur.set_messageTosend(message);
+        Proxy.Instance().sendMessage(facteur, initTrame);
 
+        DataOut message = new DataOut((byte)2,(byte)42, (byte)45,(byte)10);
+
+        Proxy.Instance().sendMessage(facteur, message);
     }
 }

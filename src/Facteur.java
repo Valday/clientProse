@@ -11,7 +11,7 @@ public class Facteur  extends Thread
 
     private InputStream in;
 
-    private static Data message;
+    private DataOut message;
 
     public Facteur(Socket socket, String name) throws Exception
     {
@@ -26,9 +26,23 @@ public class Facteur  extends Thread
         this.start();
     }
 
-    public static void set_messageTosend(Data message)
+    public void set_messageTosend(DataOut message)
     {
-        Facteur.message = message;
+        this.message = message;
+        System.out.println(" => Essai envoi");
+        byte[] outputData = this.message.formatMessageEnvoi();
+
+        try
+        {
+            this.out.write(outputData,0,outputData.length);
+            this.out.flush();
+            this.message = null;
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -41,17 +55,18 @@ public class Facteur  extends Thread
     {
         while (isAlive())
         {
-
+/*
             try
             {
                 if(message != null)
                 {
 
                     System.out.println(" => Essai envoi");
-                    byte[] outputData = this.message.formatMessageEnvoi();
+                    byte[] outputData = message.formatMessageEnvoi();
 
                     this.out.write(outputData,0,outputData.length);
                     this.out.flush();
+                    message = null;
                 }
 
             }
@@ -59,23 +74,24 @@ public class Facteur  extends Thread
             {
                 e.printStackTrace();
             }
+            */
 
-            try
-            {
-                System.out.println(" => Essai lecture");
-                byte[] inputData = new byte[Data.TAILLE_DATA_ECHANGE];
+                try
+                {
+                    System.out.println(" => Essai lecture");
+                    byte[] inputData = new byte[DataIn.TAILLE_DATA_ECHANGE];
 
-                this.in.read(inputData);
+                    this.in.read(inputData);
 
-                Data data = new Data(inputData);
+                    DataIn dataIn = new DataIn(inputData);
 
-                System.out.println(data.toString());
+                    this.computeMessage(dataIn);
 
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
         }
 
         try
@@ -86,6 +102,33 @@ public class Facteur  extends Thread
         catch (IOException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    private void computeMessage(DataIn dataIn)
+    {
+        switch (dataIn.get_type())
+        {
+            case 0:
+                try
+                {
+                    Dispatcher.Instance().isInitOk((message.get_x() == dataIn.get_etat())? true : false);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                break;
+
+            case 1:
+                Dispatcher.Instance().setEtatRobot(dataIn);
+                break;
+
+            case 2:
+                Dispatcher.Instance().setError(dataIn);
+                break;
+            default:
+                break;
         }
     }
 }

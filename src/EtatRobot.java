@@ -1,4 +1,7 @@
-package PACKAGE_NAME;
-
-public enum EtaRobot {
+public enum EtatRobot
+{
+    ERROR,
+    ENMOUVEMENT,
+    ARRET,
+    AU;
 }
